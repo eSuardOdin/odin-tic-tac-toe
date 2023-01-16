@@ -1,50 +1,48 @@
-const playerFactory = (name, symbol) => {
-
-    const returnMove = (x, y) => {
-        return [x, y];
-    }
 
 
-    return {name, symbol, returnMove};
-}
-
-
-
-const gameboard = (function(x, y, playerNameOne, playerNameTwo) {
+const Game = (() => {
+    const Gameboard = (() => {
+        let gameboard = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']];
     
-    // Board creation
-    const board = Array();
-    for(let j = 0; j < x; j++) {
-        const newLine = [];
-        for(let i = 0; i < y; i++) {
-            const newSquare = '';
-            newLine.push(newSquare);
+        const getGameboard = () => {
+            return gameboard;
         }
-        board.push(newLine);
+        const setCell = (x, y, symbol) => gameboard[x][y] = symbol;
+        const resetBoard = () => gameboard = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']]; 
+        return {getGameboard, setCell, resetBoard}
+    })();
+    
+    const playerFactory = (name, symbol, turn) => {
+    
+        const _name = name;
+        const getName = () => {
+            return _name;
+        }
+        const _symbol = symbol;
+        const getSymbol = () => {
+            return _symbol;
+        }
+        const _turn = turn;
+        const getTurn = () => {
+            return _turn;
+        }
+        const setTurn = () => {
+            _turn = !_turn;
+        }
+        return {getName, getSymbol, getTurn, setTurn};
     }
     
-
-    console.log(board);
-    const playerOne = playerFactory(playerNameOne, 'X');
-    const playerTwo = playerFactory(playerNameTwo, 'O');
-
-
-
-    return {x, y, playerOne, playerTwo};
-}) (3, 5, 'Erwann', 'Computer');
-
-console.log(gameboard);
+    const displayController = (() => {
+        const squares = document.querySelectorAll('.square');
+        
+    });
+    
+        const p1 = playerFactory('Player one', 'X');
+        const p2 = playerFactory('Player two', 'O');
+});
 
 
 
 
-const game = (board) => {
-    const makeMove = (player, x, y) => {
-        const coord = player.returnMove(x, y);
-        board.board[x,y] = player.symbol;
-        console.log(board);
-    }
-}
 
 
-game.makeMove(game.board.playerOne, 2, 3);
