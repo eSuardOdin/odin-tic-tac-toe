@@ -14,7 +14,7 @@ const Game = (() => {
     ];
     let isPlayerOneTurn = true;
     let winner = '';
-
+    
     /**
      * Returns the gameboard object and accessing methods
      */
@@ -33,8 +33,7 @@ const Game = (() => {
         const resetBoard = () => gameboard = [0, 1, 2, 3, 4, 5, 6, 7, 8]; 
         return {getGameboard, setCell, resetBoard}
     })();
-    // merged
-
+    
     /**
      * 
      * @param {*} name Name of player (optionnal)
@@ -124,21 +123,18 @@ const Game = (() => {
         return {playTurn};
     }) (); 
     
-    const playLoop = () => {
-        while(winner === '') GameLogic.playTurn(Number(prompt('Enter a number')));
-    }
+    
 
     const fakeGame = () => {
-        GameLogic.playTurn(1);
-        GameLogic.playTurn(5);
-        GameLogic.playTurn(0);
-        GameLogic.playTurn(8);
-        GameLogic.playTurn(2);
+        GameLogic.playTurn(Number(prompt('Enter a number')));
     }
-    return {fakeGame};
+    const playLoop = () => {
+        while(winner === '') fakeGame();
+    }
+    return {playLoop};
 })();
+Game.playLoop();
 
-Game.fakeGame();
 // console.log(Game.winningCombinations);
 // Game.playerMove(2,2);
 // Game.playerMove(1,1);
