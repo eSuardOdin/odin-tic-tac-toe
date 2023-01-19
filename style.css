@@ -6,10 +6,32 @@
 .body{
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3rem;
+    padding: 25px;
 }
-.game-container{
+
+.winner {
+    text-decoration: underline;
+    color: rgb(163, 165, 21);
+    font-weight: 700;
+}
+
+.reset {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    background-color: rgb(83, 83, 110);
+    color: aqua;
+    font-weight: 700;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.game-container {
     width: fit-content;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

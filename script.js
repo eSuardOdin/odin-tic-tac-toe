@@ -2,6 +2,18 @@
 
 const Game = (() => {
 
+    let isPlayerOneTurn;
+    let winner;
+    const initGame = () => {
+        isPlayerOneTurn = true;
+        winner = '';
+        Gameboard.resetBoard();
+        console.log({
+            isPlayerOneTurn,
+            winner,
+            gameboard: Gameboard.getGameboard()
+        });
+    }
     const winningCombinations = [
         [0,1,2],
         [3,4,5],
@@ -12,8 +24,7 @@ const Game = (() => {
         [1,4,7],
         [2,5,8]
     ];
-    let isPlayerOneTurn = true;
-    let winner = '';
+    
     
     /**
      * Returns the gameboard object and accessing methods
@@ -111,41 +122,62 @@ const Game = (() => {
             //      - the player picks it
             //      - checking if it makes him win
             //      - changing turn
-            if(Gameboard.getGameboard()[pick] === pick) { 
-                
+            if(Gameboard.getGameboard()[pick] === pick) { // if the gameboard value is the picked nb 
+                                                          // (else it's already played)
                 playMove(pick, player);
                 checkWinner(player);
-                isPlayerOneTurn = ! isPlayerOneTurn;
+                isPlayerOneTurn = !isPlayerOneTurn;
             }
 
         };
 
-        return {playTurn};
+        return {playTurn, p1: p1.getName(), p2: p2.getName()};
     }) (); 
     
     
-
+    // Need to put it in a loop
+    // For now it's my game controller
     const displayController = (() => {
-
+        const resetBtn = document.querySelector('.reset'); 
+        const playingStatus = document.querySelector('.playing-status');
         const squares = document.querySelectorAll('.square');
+        const changePlayingStatus = (str, target) => {
+            target.innerHTML = str;
+        }
 
+        let player = isPlayerOneTurn ? GameLogic.p2 : GameLogic.p1;
+        changePlayingStatus(`${player}'s turn`, playingStatus);
         // Add the click events to trigger a move on click
         const addClickEvents = () => {
-            console.log('In addClickEvents');
             squares.forEach(square => {
 
                 square.addEventListener('click', () => {
                     if(winner === '') {
+                        player = isPlayerOneTurn ? GameLogic.p2 : GameLogic.p1 // Need to find a better way
+                        changePlayingStatus(`${player}'s turn`, playingStatus);
                         GameLogic.playTurn(Number(square.getAttribute('id')));
                         printBoard(square);
                         console.log(`Clicked on id ${square.getAttribute('id')}`);
+                        if(winner !== '') {
+                            playingStatus.classList.add('winner');
+                            changePlayingStatus(`${winner} wins`, playingStatus);
+                        }
                     }
                 });
             })
         };
 
+
+        
+        const removeClickEvents = () => {
+            squares.forEach(square => {
+                square.removeEventListener('click');
+            })
+        };
+
         const printBoard = (square) => {
-            square.innerHTML = Gameboard.getGameboard()[Number(square.getAttribute('id'))];
+            const cell = Gameboard.getGameboard()[Number(square.getAttribute('id'))];
+            square.innerHTML = (cell === 'X' || cell === 'O') ? cell : '';
         }
 
         return {addClickEvents};
@@ -159,94 +191,17 @@ const Game = (() => {
     // |   DEBUG PLAYING    |
     // |                    |
     // O--------------------O
-    const fakeGame = () => {
-        GameLogic.playTurn(Number(prompt('Enter a number')));
-        console.log(Gameboard.getGameboard());
-    }
-    const playLoop = () => {
-        while(winner === '') fakeGame();
-    }
-    return {playLoop, displayController};
+    // const fakeGame = () => {
+    //     GameLogic.playTurn(Number(prompt('Enter a number')));
+    //     console.log(Gameboard.getGameboard());
+    // }
+    // const playLoop = () => {
+    //     while(winner === '') fakeGame();
+    // }
+    return {displayController, initGame};
 })();
 
+
+Game.initGame()
+
 Game.displayController.addClickEvents();
-
-// console.log(Game.winningCombinations);
-// Game.playerMove(2,2);
-// Game.playerMove(1,1);
-
-
-// Game.displayController();
-
-
-
-
-
-
-
-
-
-    
-        // const gameContainer = document.querySelector('.game-container');
-        // // On Game.Reset (?) or new game
-        // const createBoard = () => {
-        //     let html = '';
-        //     Gameboard.getGameboard().forEach(el => {
-        //         console.log(el);
-        //         html += `<span id="${el}" class="square"></span>`;
-        //     });
-        //     gameContainer.insertAdjacentHTML("beforeend", html);
-        // }
-        // createBoard();
-
-
-
-    /**
-     * For visual display of the game
-     */
-//     const displayController = (() => {
-    
-
-
-//         const printMark = (el, player) => {
-//             el.innerHtml = player.getSymbol();
-//         }
-
-
-//         const squares = document.querySelectorAll('.square');
-//         squares.forEach(square => {
-//             square.addEventListener('click', (e) => {
-//                 GameLogic.playTurn(square);
-//             });
-//         })
-
-//         // Print the board
-//         const printBoard = () => {
-//             for(let i = 1; i <= getGameboard().length; i++) {
-
-//             }
-//         };
-        
-//     });
-    
-//     // Changes the choosed square in the array location specified
-//     // and changes the player turn
-//     // const playerMove = (x,y) => {
-//     //     if(isPlayerOneTurn) {
-            
-//     //         Gameboard.setCell(x, y, p1.getSymbol())
-//     //     } else {
-//     //         Gameboard.setCell(x, y, p2.getSymbol())
-//     //     }
-//     //     isPlayerOneTurn = !isPlayerOneTurn;
-//     //     return {playerMove}
-//     // };
-//     const p1 = playerFactory('Player one', 'X');
-//     const p2 = playerFactory('Player two', 'O');
-
-    
-    
-    
-
-
-//     return {winningCombinations, displayController};
