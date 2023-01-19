@@ -125,15 +125,51 @@ const Game = (() => {
     
     
 
+    const displayController = (() => {
+
+        const squares = document.querySelectorAll('.square');
+
+        // Add the click events to trigger a move on click
+        const addClickEvents = () => {
+            console.log('In addClickEvents');
+            squares.forEach(square => {
+
+                square.addEventListener('click', () => {
+                    if(winner === '') {
+                        GameLogic.playTurn(Number(square.getAttribute('id')));
+                        printBoard(square);
+                        console.log(`Clicked on id ${square.getAttribute('id')}`);
+                    }
+                });
+            })
+        };
+
+        const printBoard = (square) => {
+            square.innerHTML = Gameboard.getGameboard()[Number(square.getAttribute('id'))];
+        }
+
+        return {addClickEvents};
+    }) ();
+
+
+
+
+    // O--------------------O
+    // |                    |
+    // |   DEBUG PLAYING    |
+    // |                    |
+    // O--------------------O
     const fakeGame = () => {
         GameLogic.playTurn(Number(prompt('Enter a number')));
+        console.log(Gameboard.getGameboard());
     }
     const playLoop = () => {
         while(winner === '') fakeGame();
     }
-    return {playLoop};
+    return {playLoop, displayController};
 })();
-Game.playLoop();
+
+Game.displayController.addClickEvents();
 
 // console.log(Game.winningCombinations);
 // Game.playerMove(2,2);
