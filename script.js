@@ -5,6 +5,7 @@ const Game = (() => {
     let isPlayerOneTurn = true;
     let winner = '';
     const initGame = () => {
+        GameLogic.resetBothPlayer();
         isPlayerOneTurn = true;
         winner = '';
         Gameboard.resetBoard();
@@ -55,11 +56,18 @@ const Game = (() => {
         let _isWinner = false;
         
         // An array of moves the player did
-        const _movesPlayed = [];
+        let _movesPlayed = [];
         const getMovesPlayed = () => _movesPlayed; // Just for debug
      
-        
-        const addMove = (squareNb) => _movesPlayed.push(squareNb);
+        const resetMoves = () => {
+            // while(_movesPlayed > 0) _movesPlayed.pop();
+            console.log(`in reset move for ${name}`);
+            _movesPlayed = [];
+        }
+        const addMove = (squareNb) => {
+            _movesPlayed.push(squareNb);
+            console.log(_movesPlayed);
+        }
         const _name = name;
         const getName = () => {
             return _name;
@@ -71,7 +79,7 @@ const Game = (() => {
         const setIsWinner = () => {
             _isWinner = !_isWinner;
         }
-        return {getName, getSymbol, addMove, getMovesPlayed, setIsWinner};
+        return {getName, getSymbol, addMove, getMovesPlayed, setIsWinner, resetMoves};
     }
     
 
@@ -139,7 +147,12 @@ const Game = (() => {
 
         };
 
-        return {playTurn, getPlayingStatus};
+        const resetBothPlayer = () => {
+            p1.resetMoves();
+            p2.resetMoves();
+        }
+
+        return {playTurn, getPlayingStatus, resetBothPlayer};
     }) (); 
     
     
