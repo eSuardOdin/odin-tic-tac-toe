@@ -2,8 +2,8 @@
 
 const Game = (() => {
 
-    let isPlayerOneTurn;
-    let winner;
+    let isPlayerOneTurn = true;
+    let winner = '';
     const initGame = () => {
         isPlayerOneTurn = true;
         winner = '';
@@ -113,6 +113,14 @@ const Game = (() => {
             Gameboard.setCell(pick, player.getSymbol());
         } 
 
+        // Send a playing status string to displayController
+        const getPlayingStatus = () => {
+            if(winner !== '') {
+                return (`${winner} wins`)
+            } else {
+                return isPlayerOneTurn ? `${p1.getName()}'s turn` : `${p2.getName()}'s turn`; 
+            }
+        }
 
         const playTurn = (pick) => { // Pick will be the square id
             // Checking if there is no winner yet and setting who's playing
@@ -131,7 +139,7 @@ const Game = (() => {
 
         };
 
-        return {playTurn, p1: p1.getName(), p2: p2.getName()};
+        return {playTurn, getPlayingStatus};
     }) (); 
     
     
@@ -145,29 +153,46 @@ const Game = (() => {
             target.innerHTML = str;
         }
 
-        let player = isPlayerOneTurn ? GameLogic.p2 : GameLogic.p1;
-        changePlayingStatus(`${player}'s turn`, playingStatus);
+        
+        changePlayingStatus(GameLogic.getPlayingStatus(), playingStatus);
         // Add the click events to trigger a move on click
         const addClickEvents = () => {
+            
+            // Clic on a square
             squares.forEach(square => {
 
                 square.addEventListener('click', () => {
                     if(winner === '') {
-                        player = isPlayerOneTurn ? GameLogic.p2 : GameLogic.p1 // Need to find a better way
-                        changePlayingStatus(`${player}'s turn`, playingStatus);
+                        // player = isPlayerOneTurn ? GameLogic.p2 : GameLogic.p1 // Need to find a better way
                         GameLogic.playTurn(Number(square.getAttribute('id')));
+                        changePlayingStatus(GameLogic.getPlayingStatus(), playingStatus);
                         printBoard(square);
                         console.log(`Clicked on id ${square.getAttribute('id')}`);
                         if(winner !== '') {
                             playingStatus.classList.add('winner');
-                            changePlayingStatus(`${winner} wins`, playingStatus);
+                            changePlayingStatus(GameLogic.getPlayingStatus(), playingStatus);
                         }
                     }
                 });
             })
+
+
+            // WARNING !!! 
+            // If we had x-x-" and reset,
+            // playing   "-"-x is enough to win
+            // TO FIX
+            resetBtn.addEventListener('click', () => {
+                playingStatus.classList.remove('winner');
+                console.log('reset clicked');
+                console.log(Gameboard.getGameboard()); 
+                initGame();
+                squares.forEach(square => printBoard(square))
+                console.log(Gameboard.getGameboard());
+                changePlayingStatus(GameLogic.getPlayingStatus(), playingStatus);
+            });
         };
 
-
+        
         
         const removeClickEvents = () => {
             squares.forEach(square => {
