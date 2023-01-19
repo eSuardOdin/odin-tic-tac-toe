@@ -28,7 +28,7 @@ const Game = (() => {
     
     
     /**
-     * Returns the gameboard object and accessing methods
+     * Returns the gameboard object and accessing methods.
      */
     const Gameboard = (() => {
         let gameboard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
