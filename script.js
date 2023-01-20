@@ -32,7 +32,12 @@ const Game = (() => {
      */
     const Gameboard = (() => {
         let gameboard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-    
+        let moveNb = 0;
+        const addMove = () => {
+            moveNb += 1;
+            console.log(`Number of moves ${moveNb}`);
+            return moveNb;
+        }
         const getGameboard = () => {
             return gameboard;
         }
@@ -42,8 +47,11 @@ const Game = (() => {
             console.log(gameboard);
             return htmlPosId;
         }; 
-        const resetBoard = () => gameboard = [0, 1, 2, 3, 4, 5, 6, 7, 8]; 
-        return {getGameboard, setCell, resetBoard}
+        const resetBoard = () => {
+            gameboard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            moveNb = 0; 
+        }
+        return {getGameboard, setCell, resetBoard, addMove};
     })();
     
     /**
@@ -110,8 +118,11 @@ const Game = (() => {
                         console.log(`${player.getName()} wins !`);
                         return;
                     }
-
+                    
             });
+            if(Gameboard.addMove() === 9) {
+                winner = 'It\'s a draw...';
+            }
         }
         
         const playMove = (pick, player) => {
@@ -124,6 +135,7 @@ const Game = (() => {
         // Send a playing status string to displayController
         const getPlayingStatus = () => {
             if(winner !== '') {
+                if(winner === 'It\'s a draw...') return winner;
                 return (`${winner} wins`)
             } else {
                 return isPlayerOneTurn ? `${p1.getName()}'s turn` : `${p2.getName()}'s turn`; 
@@ -182,7 +194,12 @@ const Game = (() => {
                         printBoard(square);
                         console.log(`Clicked on id ${square.getAttribute('id')}`);
                         if(winner !== '') {
-                            playingStatus.classList.add('winner');
+                            if(winner === 'It\'s a draw...') {
+                                playingStatus.classList.add('draw');
+                            }
+                            else {
+                                playingStatus.classList.add('winner');
+                            }
                             changePlayingStatus(GameLogic.getPlayingStatus(), playingStatus);
                         }
                     }
@@ -190,12 +207,10 @@ const Game = (() => {
             })
 
 
-            // WARNING !!! 
-            // If we had x-x-" and reset,
-            // playing   "-"-x is enough to win
-            // TO FIX
+            
             resetBtn.addEventListener('click', () => {
                 playingStatus.classList.remove('winner');
+                playingStatus.classList.remove('draw');
                 console.log('reset clicked');
                 console.log(Gameboard.getGameboard()); 
                 initGame();

@@ -20,7 +20,10 @@
     color: rgb(163, 165, 21);
     font-weight: 700;
 }
-
+.draw {
+    text-decoration: underline;
+    font-weight: 700;
+}
 .reset {
     font-family: 'Montserrat', sans-serif;
     font-size: 2rem;
