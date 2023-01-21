@@ -39,6 +39,9 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
+
+
+
 }
 .square {
     font-family: 'Montserrat', sans-serif;
@@ -49,4 +52,26 @@
     border: solid black 2px;
     width: 150px;
     height: 150px;
+}
+
+
+.animateMarker {
+    animation-name: animateMarker;
+    animation-duration: 0.45s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes animateMarker {
+    0% {
+        font-size: 0;
+        opacity: 0.2;
+    }
+    60% {
+        font-size: 5em;
+        opacity: 0.7;
+    }
+    100% {
+        font-size: 2em;
+        opacity: 1;
+    } 
 }
