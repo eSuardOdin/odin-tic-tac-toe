@@ -2,19 +2,9 @@
 
 const Game = (() => {
 
+    // Global variables
     let isPlayerOneTurn = true;
     let winner = '';
-    const initGame = () => {
-        GameLogic.resetBothPlayer();
-        isPlayerOneTurn = true;
-        winner = '';
-        Gameboard.resetBoard();
-        console.log({
-            isPlayerOneTurn,
-            winner,
-            gameboard: Gameboard.getGameboard()
-        });
-    }
     const winningCombinations = [
         [0,1,2],
         [3,4,5],
@@ -26,13 +16,25 @@ const Game = (() => {
         [2,5,8]
     ];
     
+    // Reset/Init the game
+    const initGame = () => {
+        GameLogic.resetBothPlayer();
+        isPlayerOneTurn = true;
+        winner = '';
+        Gameboard.resetBoard();
+    }
     
     /**
      * Returns the gameboard object and accessing methods.
      */
     const Gameboard = (() => {
         let gameboard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-    
+        let moveNb = 0;
+        const addMove = () => {
+            moveNb += 1;
+            console.log(`Number of moves ${moveNb}`);
+            return moveNb;
+        }
         const getGameboard = () => {
             return gameboard;
         }
@@ -42,8 +44,11 @@ const Game = (() => {
             console.log(gameboard);
             return htmlPosId;
         }; 
-        const resetBoard = () => gameboard = [0, 1, 2, 3, 4, 5, 6, 7, 8]; 
-        return {getGameboard, setCell, resetBoard}
+        const resetBoard = () => {
+            gameboard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            moveNb = 0; 
+        }
+        return {getGameboard, setCell, resetBoard, addMove};
     })();
     
     /**
@@ -60,13 +65,10 @@ const Game = (() => {
         const getMovesPlayed = () => _movesPlayed; // Just for debug
      
         const resetMoves = () => {
-            // while(_movesPlayed > 0) _movesPlayed.pop();
-            console.log(`in reset move for ${name}`);
             _movesPlayed = [];
         }
         const addMove = (squareNb) => {
             _movesPlayed.push(squareNb);
-            console.log(_movesPlayed);
         }
         const _name = name;
         const getName = () => {
@@ -110,8 +112,12 @@ const Game = (() => {
                         console.log(`${player.getName()} wins !`);
                         return;
                     }
-
-            });
+                    
+            })
+            // Checks if th board is full and no winner
+            if(Gameboard.addMove() === 9) {
+                winner = 'It\'s a draw...';
+            }
         }
         
         const playMove = (pick, player) => {
@@ -124,6 +130,7 @@ const Game = (() => {
         // Send a playing status string to displayController
         const getPlayingStatus = () => {
             if(winner !== '') {
+                if(winner === 'It\'s a draw...') return winner;
                 return (`${winner} wins`)
             } else {
                 return isPlayerOneTurn ? `${p1.getName()}'s turn` : `${p2.getName()}'s turn`; 
@@ -134,7 +141,7 @@ const Game = (() => {
             // Checking if there is no winner yet and setting who's playing
             if(winner !== '') return;
             const player = isPlayerOneTurn ? p1 : p2;
-            // If pick is not yet played :
+            // If pick has not been played yet :
             //      - the player picks it
             //      - checking if it makes him win
             //      - changing turn
@@ -156,12 +163,11 @@ const Game = (() => {
     }) (); 
     
     
-    // Need to put it in a loop
-    // For now it's my game controller
     const displayController = (() => {
         const resetBtn = document.querySelector('.reset'); 
         const playingStatus = document.querySelector('.playing-status');
         const squares = document.querySelectorAll('.square');
+        
         const changePlayingStatus = (str, target) => {
             target.innerHTML = str;
         }
@@ -176,13 +182,18 @@ const Game = (() => {
 
                 square.addEventListener('click', () => {
                     if(winner === '') {
-                        // player = isPlayerOneTurn ? GameLogic.p2 : GameLogic.p1 // Need to find a better way
+                        
                         GameLogic.playTurn(Number(square.getAttribute('id')));
+                        square.classList.add('animateMarker');
                         changePlayingStatus(GameLogic.getPlayingStatus(), playingStatus);
                         printBoard(square);
-                        console.log(`Clicked on id ${square.getAttribute('id')}`);
                         if(winner !== '') {
-                            playingStatus.classList.add('winner');
+                            if(winner === 'It\'s a draw...') {
+                                playingStatus.classList.add('draw');
+                            }
+                            else {
+                                playingStatus.classList.add('winner');
+                            }
                             changePlayingStatus(GameLogic.getPlayingStatus(), playingStatus);
                         }
                     }
@@ -190,17 +201,15 @@ const Game = (() => {
             })
 
 
-            // WARNING !!! 
-            // If we had x-x-" and reset,
-            // playing   "-"-x is enough to win
-            // TO FIX
+            
             resetBtn.addEventListener('click', () => {
                 playingStatus.classList.remove('winner');
-                console.log('reset clicked');
-                console.log(Gameboard.getGameboard()); 
+                playingStatus.classList.remove('draw');
+                squares.forEach(square => {
+                    square.classList.remove('animateMarker')
+                })
                 initGame();
                 squares.forEach(square => printBoard(square))
-                console.log(Gameboard.getGameboard());
                 changePlayingStatus(GameLogic.getPlayingStatus(), playingStatus);
             });
         };
@@ -221,21 +230,6 @@ const Game = (() => {
         return {addClickEvents};
     }) ();
 
-
-
-
-    // O--------------------O
-    // |                    |
-    // |   DEBUG PLAYING    |
-    // |                    |
-    // O--------------------O
-    // const fakeGame = () => {
-    //     GameLogic.playTurn(Number(prompt('Enter a number')));
-    //     console.log(Gameboard.getGameboard());
-    // }
-    // const playLoop = () => {
-    //     while(winner === '') fakeGame();
-    // }
     return {displayController, initGame};
 })();
 
